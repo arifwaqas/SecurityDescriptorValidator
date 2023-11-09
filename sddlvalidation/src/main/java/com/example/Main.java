@@ -1,7 +1,6 @@
 package com.example;
 
 import net.tirasa.adsddl.ntsd.SDDL;
-import net.tirasa.adsddl.ntsd.SID;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -18,20 +17,6 @@ import com.hierynomus.smbj.share.DiskShare;
 import org.apache.commons.codec.binary.Base64;
 
 public class Main {
-
-    public static void validateSd(String sd) {
-
-        byte[] securityDescriptor = sd.getBytes();
-
-        SDDL sddl = new SDDL(securityDescriptor);
-
-        SID ownerSid = sddl.getOwner();
-
-        String ownerSidString = new String(ownerSid.toString());
-
-        System.out.println(ownerSidString);
-
-    }
 
     public static String getSd(String shareName, String folderPath) {
 
@@ -67,13 +52,17 @@ public class Main {
             String dirEntryPath = folderPath;
             SecurityDescriptor sd = share.getSecurityInfo(dirEntryPath, securityInformationSet);
 
-            System.out.println("*******************" + sd.toString());
+            System.out.println("***********************************");
+            System.out.println("Security_Descriptor" + sd.toString());
+            System.out.println("***********************************");
 
             SMBBuffer smbBuffer = new SMBBuffer();
             sd.write(smbBuffer);
             sdString = new String(smbBuffer.array(), StandardCharsets.ISO_8859_1);
 
             byte[] securityDescriptor = Base64.decodeBase64(sdString);
+
+            SDDL sddl = new SDDL(securityDescriptor);
 
             sdString = new String(securityDescriptor, StandardCharsets.ISO_8859_1);
 
@@ -93,8 +82,6 @@ public class Main {
 
         String sd = getSd("SYSVOL", "New Folder\\New Text Document.txt");
         // main function
-
-        validateSd(sd);
 
         return;
 
